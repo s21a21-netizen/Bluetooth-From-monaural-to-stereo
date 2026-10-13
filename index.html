@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stereo Player</title>
+    <title>Stereo Bluetooth Player</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="player-container">
+        <!-- 開始ボタン（ブラウザの音声キャプチャ権限を取るために最初に押します） -->
+        <button id="start-btn" class="start-button">音楽の音声をキャプチャして開始</button>
+
         <!-- アルバムアートワーク -->
         <div class="artwork-container">
             <img id="artwork" src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=600&q=80" alt="Album Art">
@@ -21,18 +24,20 @@
             <div id="time-display">00:00</div>
         </div>
 
-        <!-- ビジュアルライザーとBluetooth選択のエリア (L/R) -->
+        <!-- 左右チャンネルのラッパー -->
         <div class="channels-wrapper">
             <!-- チャンネル 1 (L) -->
             <div class="channel-box">
                 <div class="visualizer" id="visualizer-l">
-                    <!-- セグメントバー (JSで生成または固定配置) -->
-                    <div class="bar active"></div><div class="bar active"></div><div class="bar active"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    <!-- バーを15本配置 -->
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
                 </div>
                 <div class="device-selector">
                     <img src="https://files.catbox.moe/7atmc2.png" alt="Bluetooth" class="bt-icon">
                     <select class="speaker-select" id="speaker-l">
-                        <option value="">スピーカー名</option>
+                        <option value="">スピーカー名 (L)</option>
                     </select>
                 </div>
             </div>
@@ -40,12 +45,14 @@
             <!-- チャンネル 2 (R) -->
             <div class="channel-box">
                 <div class="visualizer" id="visualizer-r">
-                    <div class="bar active"></div><div class="bar active"></div><div class="bar active"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
                 </div>
                 <div class="device-selector">
                     <img src="https://files.catbox.moe/7atmc2.png" alt="Bluetooth" class="bt-icon">
                     <select class="speaker-select" id="speaker-r">
-                        <option value="">スピーカー名</option>
+                        <option value="">スピーカー名 (R)</option>
                     </select>
                 </div>
             </div>
