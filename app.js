@@ -1,5 +1,6 @@
 let audioCtx;
 let startTime = Date.now();
+let destL, destR;
 
 // 1. オーディオデバイス（スピーカー）のリストを取得してセレクトボックスに反映
 async function updateDeviceList() {
@@ -32,15 +33,12 @@ async function updateDeviceList() {
 // 2. 「音楽の音声をキャプチャして開始」ボタンを押したときの処理
 document.getElementById('start-btn').addEventListener('click', async () => {
     try {
-        // PC上の音声（タブや画面の音声）をキャプチャするプロンプトを出す
+        // PC上の音声（タブや画面の音声）をキャプチャ
         const stream = await navigator.mediaDevices.getDisplayMedia({
-            video: true, // ブラウザの仕様上videoも取得する必要がありますが、音声のみ利用します
-            audio: {
-                suppressLocalAudioPlayback: false
-            }
+            video: true,
+            audio: { suppressLocalAudioPlayback: false }
         });
 
-        // スタートボタンを隠す
         document.getElementById('start-btn').style.display = 'none';
 
         // Web Audio APIの初期化
@@ -54,15 +52,23 @@ document.getElementById('start-btn').addEventListener('click', async () => {
         // Lチャンネル用アナライザー（ビジュアルライザー用）
         const analyserL = audioCtx.createAnalyser();
         analyserL.fftSize = 64;
-        splitter.connect(analyserL, 0); // 0がLチャンネル
+        splitter.connect(analyserL, 0);
 
         // Rチャンネル用アナライザー
         const analyserR = audioCtx.createAnalyser();
         analyserR.fftSize = 64;
-        splitter.connect(analyserR, 1); // 1がRチャンネル
+        splitter.connect(analyserR, 1);
 
-        // 出力先の接続（スピーカー選択の監視）
-        setupSpeakerRouting(splitter);
+        // 左右それぞれの音声ストリームを作り出すノード
+        destL = audioCtx.createMediaStreamDestination();
+        destR = audioCtx.createMediaStreamDestination();
+
+        // スプリッターから分けた音をそれぞれの出力先に送る
+        splitter.connect(destL, 0); // Lチャンネル
+        splitter.connect(destR, 1); // Rチャンネル
+
+        // 隠しオーディオ要素を作って、別々のスピーカーに出力させる
+        setupAudioElements(destL.stream, destR.stream);
 
         // ビジュアルライザーの描画ループ開始
         visualize(analyserL, 'visualizer-l');
@@ -72,31 +78,55 @@ document.getElementById('start-btn').addEventListener('click', async () => {
         startTimer();
 
     } catch (err) {
-        console.error('音声キャプチャがキャンセルされたか、エラーが発生しました:', err);
+        console.error('音声キャプチャエラー:', err);
         alert('音声のキャプチャが許可されませんでした。');
     }
 });
 
-// 3. スピーカーの選択変更時にそれぞれの出力先デバイスを変更する処理
-function setupSpeakerRouting(splitter) {
-    const selectL = document.getElementById('speaker-l');
-    const selectR = document.getElementById('speaker-r');
+// 3. 隠しオーディオ要素を使って、左右別々のBluetoothスピーカーに音を飛ばす処理
+function setupAudioElements(streamL, streamR) {
+    // L用オーディオ要素
+    const audioL = document.createElement('audio');
+    audioL.srcObject = streamL;
+    audioL.autoplay = true;
+    audioL.muted = false;
 
-    // Lチャンネルの出力先変更
+    // R用オーディオ要素
+    const audioR = document.createElement('audio');
+    audioR.srcObject = streamR;
+    audioR.autoplay = true;
+    audioR.muted = false;
+
+    // Lスピーカー変更時の処理
+    const selectL = document.getElementById('speaker-l');
     selectL.addEventListener('change', async () => {
         const deviceId = selectL.value;
-        // 注意: setSinkIdはHTMLAudioElementや一部の環境でサポートされます
-        console.log('Lスピーカー変更:', deviceId);
+        if (deviceId && typeof audioL.setSinkId === 'function') {
+            try {
+                await audioL.setSinkId(deviceId);
+                console.log('L出力先変更成功:', deviceId);
+            } catch (e) {
+                console.error('L出力先変更失敗:', e);
+            }
+        }
     });
 
-    // Rチャンネルの出力先変更
+    // Rスピーカー変更時の処理
+    const selectR = document.getElementById('speaker-r');
     selectR.addEventListener('change', async () => {
         const deviceId = selectR.value;
-        console.log('Rスピーカー変更:', deviceId);
+        if (deviceId && typeof audioR.setSinkId === 'function') {
+            try {
+                await audioR.setSinkId(deviceId);
+                console.log('R出力先変更成功:', deviceId);
+            } catch (e) {
+                console.error('R出力先変更失敗:', e);
+            }
+        }
     });
 }
 
-// 4. ビジュアルライザーの描画処理（赤とグレーのバーを音量に合わせて上下させる）
+// 4. ビジュアルライザーの描画処理
 function visualize(analyser, elementId) {
     const container = document.getElementById(elementId);
     const bars = container.querySelectorAll('.bar');
@@ -106,10 +136,8 @@ function visualize(analyser, elementId) {
         requestAnimationFrame(draw);
         analyser.getByteFrequencyData(dataArray);
 
-        // バーの本数に合わせてデータを間引いて反映
         bars.forEach((bar, index) => {
             const value = dataArray[index * 2] || 0;
-            // 一定のしきい値を超えたら active クラス（赤色）を付与
             if (value > 50) {
                 bar.classList.add('active');
             } else {
@@ -120,7 +148,7 @@ function visualize(analyser, elementId) {
     draw();
 }
 
-// 5. 曲情報の自動取得 (Media Session API & 再生時間カウンター)
+// 5. 再生時間カウンター
 function startTimer() {
     setInterval(() => {
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
@@ -130,24 +158,5 @@ function startTimer() {
     }, 1000);
 }
 
-// ブラウザ側でMedia Session（再生中の曲情報）が取れる場合は自動反映
-if ('mediaSession' in navigator) {
-    navigator.mediaSession.setActionHandler('play', function() {});
-    navigator.mediaSession.setActionHandler('pause', function() {});
-    
-    // 定期的にメタデータをチェック
-    setInterval(() => {
-        if (navigator.mediaSession.metadata) {
-            const meta = navigator.mediaSession.metadata;
-            if (meta.title) document.getElementById('track-name').textContent = meta.title;
-            if (meta.album) document.getElementById('album-name').textContent = meta.album;
-            if (meta.artwork && meta.artwork.length > 0) {
-                document.getElementById('artwork').src = meta.artwork[0].src;
-            }
-        }
-    }, 1000);
-}
-
-// 初期化時にデバイス一覧を取得
 navigator.mediaDevices.addEventListener('devicechange', updateDeviceList);
 updateDeviceList();
