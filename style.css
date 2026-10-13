@@ -1,0 +1,113 @@
+body {
+    background-color: #888888;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: sans-serif;
+}
+
+.player-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+/* アートワーク */
+.artwork-container {
+    width: 320px;
+    height: 320px;
+    border: 4px solid #000;
+    background: #fff;
+}
+
+.artwork-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 曲情報 */
+.track-info {
+    text-align: center;
+    color: #000;
+}
+
+#album-name {
+    font-size: 18px;
+    margin-bottom: 4px;
+}
+
+#track-name {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+#time-display {
+    font-size: 14px;
+}
+
+/* 左右チャンネルのラッパー */
+.channels-wrapper {
+    display: flex;
+    gap: 40px;
+    margin-top: 10px;
+}
+
+.channel-box {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+/* ビジュアルライザー */
+.visualizer {
+    background-color: #ffffff;
+    border: 2px solid #ffffff;
+    width: 220px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 0 5px;
+}
+
+.bar {
+    width: 8px;
+    height: 30px;
+    background-color: #a0a0a0;
+}
+
+.bar.active {
+    background-color: #ff0000;
+}
+
+/* スピーカー選択ボックス */
+.device-selector {
+    background-color: #ffffff;
+    width: 220px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    box-sizing: border-box;
+    gap: 8px;
+}
+
+.bt-icon {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+.speaker-select {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+}
