@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stereo Player</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="player-container">
+        <!-- アルバムアートワーク -->
+        <div class="artwork-container">
+            <img id="artwork" src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=600&q=80" alt="Album Art">
+        </div>
+
+        <!-- 曲情報 -->
+        <div class="track-info">
+            <div id="album-name">アルバム名</div>
+            <div id="track-name">曲名</div>
+            <div id="time-display">00:00</div>
+        </div>
+
+        <!-- ビジュアルライザーとBluetooth選択のエリア (L/R) -->
+        <div class="channels-wrapper">
+            <!-- チャンネル 1 (L) -->
+            <div class="channel-box">
+                <div class="visualizer" id="visualizer-l">
+                    <!-- セグメントバー (JSで生成または固定配置) -->
+                    <div class="bar active"></div><div class="bar active"></div><div class="bar active"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                </div>
+                <div class="device-selector">
+                    <img src="https://files.catbox.moe/7atmc2.png" alt="Bluetooth" class="bt-icon">
+                    <select class="speaker-select" id="speaker-l">
+                        <option value="">スピーカー名</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- チャンネル 2 (R) -->
+            <div class="channel-box">
+                <div class="visualizer" id="visualizer-r">
+                    <div class="bar active"></div><div class="bar active"></div><div class="bar active"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                </div>
+                <div class="device-selector">
+                    <img src="https://files.catbox.moe/7atmc2.png" alt="Bluetooth" class="bt-icon">
+                    <select class="speaker-select" id="speaker-r">
+                        <option value="">スピーカー名</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
